@@ -1,21 +1,32 @@
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native"
-const ForgotPassword = ({ navigation }) => {
+import "../firebase/config"
+import { getAuth, sendPasswordResetEmail } from "firebase/auth"
+import { useState } from "react"
+
+const ForgotPassword = () => {
+  const [email, setEmail] = useState("")
+
+  const sentCode = () => {
+    sendPasswordResetEmail(getAuth(), email)
+      .then(() => Alert.alert(`Send code to ${email}`))
+      .catch((e) => Alert.alert(e.message))
+  }
   return (
     <View style={styles.container}>
-      <TextInput style={styles.input} placeholder='Code' />
+      <TextInput
+        style={styles.input}
+        placeholder='Email'
+        onChangeText={(value) => setEmail(value)}
+      />
       <TouchableOpacity style={styles.button}>
-        <Text
-          style={{ color: "#fff", fontSize: 18 }}
-          onPress={() => {
-            navigation.navigate("LogIn")
-          }}
-        >
+        <Text style={{ color: "#fff", fontSize: 18 }} onPress={sentCode}>
           Restore
         </Text>
       </TouchableOpacity>

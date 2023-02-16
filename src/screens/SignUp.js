@@ -9,12 +9,15 @@ import {
 } from "react-native"
 import "../firebase/config"
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth"
+import { getDatabase, ref, set } from "firebase/database"
 import { useState } from "react"
 
-const SignUp = ({ navigation }) => {
+const SignUp = () => {
   const [fullName, setFullName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+
+  let date = new Date().toString()
 
   const registerUser = () => {
     if (!fullName || !email || !password) {
@@ -22,6 +25,13 @@ const SignUp = ({ navigation }) => {
     } else {
       createUserWithEmailAndPassword(getAuth(), email, password)
         .then(() => {
+          set(ref(getDatabase(), `user/${getAuth().currentUser.uid}`), {
+            fullName,
+            email,
+            date: date,
+            profileImg: "",
+          })
+
           Alert.alert("Succesfull")
         })
         .catch((e) => Alert.alert(e.message))
